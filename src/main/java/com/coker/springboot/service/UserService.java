@@ -24,7 +24,6 @@ public class  UserService {
     @Autowired
     DepartmentService departmentService;
 
-    @Transactional
         public List<UserDTO> findAll(){
             List<User> users = userRepo.findAll();
             return users.stream().map(u -> convert(u)).collect(Collectors.toList());
@@ -59,12 +58,12 @@ public class  UserService {
 
         @Transactional
         public void update(UserDTO userDTO){
-            User userUpdate = userRepo.findById(userDTO.getId());
+            User userUpdate = userRepo.findById(userDTO.getId()).orElse(null);
+
             if(userUpdate!=null){
                 userUpdate.setAddress(userDTO.getAddress());
-                userUpdate.setFirst_name(userDTO.getFirst_name());
-                userUpdate.setLast_name(userDTO.getLast_name());
-                userUpdate.setDepartment(userDTO.getDepartment());
+                userUpdate.setFirst_Name(userDTO.getFirst_name());
+                userUpdate.setLast_Name(userDTO.getLast_name());
                 userUpdate.setDOB(userDTO.getDOB());
             }
 

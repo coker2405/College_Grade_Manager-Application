@@ -13,19 +13,29 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
-public class LoginController{
+public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/")
+    public ResponseDTO<List<UserDTO>> listUser(){
 
-    @PostMapping("/login")
-    public ResponseDTO<Void> login(@ModelAttribute @Valid UserDTO userDTO)
+        List<UserDTO> users = userService.findAll();
+        return ResponseDTO.<List<UserDTO>>builder()
+                        .status(200)
+                        .message("List of users:")
+                        .data(users)
+                        .build();
+
+    }
+    @PostMapping("/create")
+    public ResponseDTO<Void> create(@ModelAttribute @Valid UserDTO userDTO)
             throws Exception{
 
             userService.add(userDTO);
             return   ResponseDTO.<Void>builder()
                     .status(200)
-                    .message("Login successfully")
+                    .message("Create successfully")
                     .build();
     }
 
@@ -39,16 +49,6 @@ public class LoginController{
                 .build();
     }
 
-    @PostMapping("/register")
-    public ResponseDTO<String> register(@ModelAttribute UserDTO userDTO) {
-
-            userService.add(userDTO);
-            return ResponseDTO.<String>builder()
-                    .status(200)
-                    .message("Register successfully")
-                    .build();
-
-    }
     @DeleteMapping("/")
     public ResponseDTO<Void> deleteUser(@RequestParam("id") int id){
         userService.deleteUser(id);

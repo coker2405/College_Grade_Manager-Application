@@ -4,6 +4,7 @@ import com.coker.springboot.dto.DepartmentDTO;
 import com.coker.springboot.dto.PageDTO;
 import com.coker.springboot.dto.SearchDTO;
 import com.coker.springboot.model.Department;
+import com.coker.springboot.model.User;
 import com.coker.springboot.repository.DepartmentRepo;
 import jakarta.persistence.NoResultException;
 import org.modelmapper.ModelMapper;
@@ -34,6 +35,7 @@ class DepartmentServiceIml implements DepartmentService{
     DepartmentRepo departmentRepo;
     ModelMapper modelMapper = new ModelMapper();
 
+    @Override
     public List<DepartmentDTO> findAll(){
         List<Department> departments = departmentRepo.findAll();
         return departments.stream().map(u -> convert(u)).collect(Collectors.toList());
@@ -64,7 +66,10 @@ class DepartmentServiceIml implements DepartmentService{
     @Transactional
     public DepartmentDTO getById(int id) {
        Department department =  departmentRepo.findById(id).orElseThrow(NoResultException::new);
-        return convert(department);
+
+       List<User> users = department.getUsers();
+        System.out.println(users.size());
+       return convert(department);
     }
     @Override
     @Transactional

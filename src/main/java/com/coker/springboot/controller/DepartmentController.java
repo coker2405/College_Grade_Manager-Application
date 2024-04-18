@@ -1,6 +1,9 @@
 package com.coker.springboot.controller;
 
-import com.coker.springboot.dto.*;
+import com.coker.springboot.dto.DepartmentDTO;
+import com.coker.springboot.dto.PageDTO;
+import com.coker.springboot.dto.ResponseDTO;
+import com.coker.springboot.dto.SearchDTO;
 import com.coker.springboot.service.DepartmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,6 @@ public class DepartmentController {
 
     @PostMapping("/create")
     public ResponseDTO<Void> createDepartment(@ModelAttribute  @Valid DepartmentDTO departmentDTO){
-
         departmentService.create(departmentDTO);
         return ResponseDTO.<Void>builder()
                 .message("Create successfully")
@@ -36,7 +38,7 @@ public class DepartmentController {
 
     }
     @DeleteMapping("/")
-    public ResponseDTO<Void> deleteDepartment(@ModelAttribute int id){
+    public ResponseDTO<Void> deleteDepartment(@Param("id") int id){
 
         departmentService.delete(id);
         return ResponseDTO.<Void>builder()
@@ -51,7 +53,7 @@ public class DepartmentController {
 
         DepartmentDTO departmentDTO = departmentService.getById(id);
 
-       return ResponseDTO.<DepartmentDTO>builder()
+        return ResponseDTO.<DepartmentDTO>builder()
                .status(200)
                .data(departmentDTO)
                .build();

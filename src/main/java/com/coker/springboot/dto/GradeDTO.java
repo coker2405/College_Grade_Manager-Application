@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class GradeDTO {
-    private int id;
+    private Integer id;
     @NotBlank
     private double score;
     private CoursesDTO courses;
