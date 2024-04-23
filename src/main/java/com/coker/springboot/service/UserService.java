@@ -18,11 +18,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class  UserService {
-    @Autowired
-    UserRepo userRepo;
-    @Autowired
-    DepartmentService departmentService;
+
+public class  UserService{
+        @Autowired
+        UserRepo userRepo;
+        @Autowired
+        DepartmentService departmentService;
 
         public List<UserDTO> findAll(){
             List<User> users = userRepo.findAll();

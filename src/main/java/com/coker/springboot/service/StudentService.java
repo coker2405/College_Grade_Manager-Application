@@ -9,25 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface StudentService {
-    void create(StudentDTO studentDTO);
-
-    void update(StudentDTO studentDTO);
-
-    void delete(int id);
-
-    StudentDTO getById(int id);
-
-    StudentDTO convert(Student student);
-
-}
 @Service
- class StudentServiceIpl implements  StudentService{
+    public class StudentService{
     @Autowired
      StudentRepo studentRepo;
 //    @Autowired
 //     UserRepo userRepo;
-    @Override
+
     @Transactional
     public void create(StudentDTO studentDTO) {
 
@@ -46,7 +34,7 @@ public interface StudentService {
 
     }
 
-    @Override
+
     @Transactional
     public void update(StudentDTO studentDTO) {
         Student student = studentRepo.getById(studentDTO.getUser().getId());
@@ -55,20 +43,20 @@ public interface StudentService {
         studentRepo.save(student);
     }
 
-    @Override
+
     @Transactional
     public void delete(int id) {
         studentRepo.deleteById(id);
     }
 
 
-    @Override
+
     @Transactional
     public StudentDTO getById(int id) {
        return new ModelMapper().map(studentRepo.getById(id),StudentDTO.class);
     }
 
-    @Override
+
     public StudentDTO convert(Student student){
         ModelMapper modelMapper = new ModelMapper();
         return modelMapper.map(student,StudentDTO.class);

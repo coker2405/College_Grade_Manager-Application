@@ -4,7 +4,6 @@ import com.coker.springboot.dto.DepartmentDTO;
 import com.coker.springboot.dto.PageDTO;
 import com.coker.springboot.dto.SearchDTO;
 import com.coker.springboot.model.Department;
-import com.coker.springboot.model.User;
 import com.coker.springboot.repository.DepartmentRepo;
 import jakarta.persistence.NoResultException;
 import org.modelmapper.ModelMapper;
@@ -19,28 +18,17 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface DepartmentService {
-    List<DepartmentDTO> findAll();
 
-    void update(DepartmentDTO departmentDTO);
-    void create(DepartmentDTO departmentDTO);
-    void delete(int id);
-    DepartmentDTO getById(int id);
-    PageDTO<List<DepartmentDTO>> searchByName(SearchDTO searchDTO);
-
-}
 @Service
-class DepartmentServiceIml implements DepartmentService{
+public class DepartmentService {
     @Autowired
     DepartmentRepo departmentRepo;
     ModelMapper modelMapper = new ModelMapper();
 
-    @Override
     public List<DepartmentDTO> findAll(){
         List<Department> departments = departmentRepo.findAll();
         return departments.stream().map(u -> convert(u)).collect(Collectors.toList());
     }
-    @Override
     @Transactional
     public void update(DepartmentDTO departmentDTO) {
         Department department = departmentRepo.findById(departmentDTO.getId()).orElse(null);
@@ -49,29 +37,25 @@ class DepartmentServiceIml implements DepartmentService{
         }
 
     }
-    @Override
     @Transactional
     public void create(DepartmentDTO departmentDTO) {
         Department department = modelMapper.map(departmentDTO, Department.class);
         departmentRepo.save(department);
     }
 
-    @Override
     @Transactional
     public void delete(int id) {
     departmentRepo.delete(departmentRepo.getById(id) );
     }
 
-    @Override
     @Transactional
     public DepartmentDTO getById(int id) {
-       Department department =  departmentRepo.findById(id).orElseThrow(NoResultException::new);
 
-       List<User> users = department.getUsers();
-        System.out.println(users.size());
+       Department department =  departmentRepo.findById(id).orElseThrow(NoResultException::new);
+//       List<User> users = department.getUsers();
+//        System.out.println(users.size());
        return convert(department);
     }
-    @Override
     @Transactional
     public PageDTO<List<DepartmentDTO>> searchByName(SearchDTO searchDTO) {
         Sort sort = Sort.by("id").ascending();

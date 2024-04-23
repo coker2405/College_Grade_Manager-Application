@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class DepartmentDTO extends TimeAuditable {
-    private Integer id;
+    private  int id;
     @NotEmpty(message = "Can not be emptied ")
     private String name;
 

@@ -13,8 +13,8 @@ import lombok.EqualsAndHashCode;
 
 public class Courses extends TimeAuditable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     private String name;
 
