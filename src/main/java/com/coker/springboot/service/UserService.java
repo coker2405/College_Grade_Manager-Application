@@ -7,6 +7,9 @@ import com.coker.springboot.model.User;
 import com.coker.springboot.repository.UserRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,6 +28,7 @@ public class  UserService{
         @Autowired
         DepartmentService departmentService;
 
+        @Cacheable(cacheNames = "users")
         public List<UserDTO> findAll(){
             List<User> users = userRepo.findAll();
             return users.stream().map(u -> convert(u)).collect(Collectors.toList());
@@ -33,23 +37,28 @@ public class  UserService{
         public void deleteUser(int id){
             userRepo.deleteById(id);
         }
+
         @Transactional
         public  UserDTO findByName(String email){
             ModelMapper modelMapper = new ModelMapper();
             UserDTO userDTO = modelMapper.map(userRepo.findByUsername(email),UserDTO.class);
             return userDTO;
         }
+
         @Transactional
+        @CachePut(cacheNames = "users")
         public  void add(UserDTO userDTO){
             ModelMapper modelMapper = new ModelMapper();
             User user = modelMapper.map(userDTO, User.class);
             userRepo.save(user);
         }
+        @Cacheable(cacheNames = "users_findById",key = "")
         @Transactional
         public UserDTO findById(int id){
             User user = userRepo.findById(id);
             return convert(user) ;
         }
+
         @Transactional
         private UserDTO convert(User user){
             ModelMapper modelMapper = new ModelMapper();
@@ -58,6 +67,10 @@ public class  UserService{
         }
 
         @Transactional
+        @Caching(put = {
+                @CachePut(cacheNames = "users"),
+                @CachePut(cacheNames = "user_search")
+        })
         public void update(UserDTO userDTO){
             User userUpdate = userRepo.findById(userDTO.getId()).orElse(null);
 
@@ -71,6 +84,7 @@ public class  UserService{
             userRepo.save(userUpdate);
         }
         @Transactional
+        @Cacheable(cacheNames = "user_search")
         public PageDTO<List<UserDTO>> searchUser(SearchDTO searchDTO){
             Sort sort = Sort.by("id").ascending();
             if(StringUtils.hasText(searchDTO.getSortedByColumn())){

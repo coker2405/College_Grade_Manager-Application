@@ -8,6 +8,11 @@ import com.coker.springboot.repository.DepartmentRepo;
 import jakarta.persistence.NoResultException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,13 +28,25 @@ import java.util.stream.Collectors;
 public class DepartmentService {
     @Autowired
     DepartmentRepo departmentRepo;
+
+    @Autowired
+    CacheManager cacheManager;
     ModelMapper modelMapper = new ModelMapper();
 
+
+    @Cacheable(cacheNames = "departmentList")
     public List<DepartmentDTO> findAll(){
         List<Department> departments = departmentRepo.findAll();
         return departments.stream().map(u -> convert(u)).collect(Collectors.toList());
     }
     @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "department_Search",allEntries = true),
+            @CacheEvict(cacheNames = "departmentList")
+    },
+    put = {
+            @CachePut(cacheNames = "department",key = "#departmentDTO.id"),
+    })
     public void update(DepartmentDTO departmentDTO) {
         Department department = departmentRepo.findById(departmentDTO.getId()).orElse(null);
         if(department != null) {
@@ -38,25 +55,29 @@ public class DepartmentService {
 
     }
     @Transactional
+    @CacheEvict(cacheNames = "department_Search", allEntries = true)
     public void create(DepartmentDTO departmentDTO) {
         Department department = modelMapper.map(departmentDTO, Department.class);
         departmentRepo.save(department);
     }
 
     @Transactional
+    @Caching( evict = {
+            @CacheEvict(cacheNames = "department",key = "id"),
+            @CacheEvict(cacheNames = "department_Search",allEntries = true)
+    })
     public void delete(int id) {
     departmentRepo.delete(departmentRepo.getById(id) );
     }
 
-    @Transactional
+    @Cacheable(cacheNames = "department", key = "#id",unless = "#result == null")
     public DepartmentDTO getById(int id) {
-
+        System.out.println("Chua co cache");
        Department department =  departmentRepo.findById(id).orElseThrow(NoResultException::new);
-//       List<User> users = department.getUsers();
-//        System.out.println(users.size());
        return convert(department);
     }
     @Transactional
+    @Cacheable(cacheNames = "department_Search")
     public PageDTO<List<DepartmentDTO>> searchByName(SearchDTO searchDTO) {
         Sort sort = Sort.by("id").ascending();
         if (StringUtils.hasText(searchDTO.getSortedByColumn())){
