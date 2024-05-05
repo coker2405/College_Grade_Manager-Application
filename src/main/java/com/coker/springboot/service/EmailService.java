@@ -16,7 +16,7 @@ public class EmailService {
 
     public void testEmail()  {
         String to = "nhattl.work@gmail.com";
-        String subject = "Thông báo kết quả tuyển dụng";
+        String subject = "Thông báo kết quả học tập";
         String body = "Chào Trần Long Nhật,\n" +
                 "\n" +
                 "Cảm ơn bạn đã dành thời gian tham gia ứng tuyển cho vị trí Java Developer tại CÔNG TY CỔ PHẦN BlueCo.\n" +
